@@ -4,36 +4,27 @@ title: "URL"
 
 # URL
 
-<!--introduced_in=v0.10.0-->
-
 > Stability: 2 - Stable
 
-<!-- source_link=lib/url.js -->
-
-The `url` module provides utilities for URL resolution and parsing. It can be
-accessed using:
+`url`モジュールはURLの結合とパースに関するユーティリティを提供します。
+このモジュールは以下のようにして利用します:
 
 ```js
 const url = require('url');
 ```
 
-## URL strings and URL objects
+## URLストリングとURLオブジェクト
 
-A URL string is a structured string containing multiple meaningful components.
-When parsed, a URL object is returned containing properties for each of these
-components.
+URLストリングは、複数の意味を持つコンポーネントを含む構造化された文字列です。
+この文字列がパースされると、各コンポーネントのプロパティを持つURLオブジェクトが返却されます。
 
-The `url` module provides two APIs for working with URLs: a legacy API that is
-Node.js specific, and a newer API that implements the same
-[WHATWG URL Standard][] used by web browsers.
+`url`モジュールはURLを操作するための2つのAPIを提供します: 
+Node.js独自のレガシーAPIと、Webブラウザで使用される[WHATWG URL Standard][]と同じ実装をおこなった新しいAPIです。
 
-A comparison between the WHATWG and Legacy APIs is provided below. Above the URL
-`'http://user:pass@sub.example.com:8080/p/a/t/h?query=string#hash'`, properties
-of an object returned by the legacy `url.parse()` are shown. Below it are
-properties of a WHATWG `URL` object.
+WHATWG APIとレガシーAPIの比較を以下に示します。
+`'http://user:pass@sub.example.com:8080/p/a/t/h?query=string#hash'`というURLの上部に、レガシーAPI`url.parse()`から返却されたオブジェクトのプロパティを示します。URLの下部にはWHATWGの`URL`オブジェクトのプロパティを示しています。
 
-WHATWG URL's `origin` property includes `protocol` and `host`, but not
-`username` or `password`.
+WHATWG URLの`origin`プロパティには、`protocol`と`host`が含まれますが、`username`や`password`は含まれていません。
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
@@ -53,17 +44,17 @@ WHATWG URL's `origin` property includes `protocol` and `host`, but not
 ├─────────────┴─────────────────────┴────────────────────────┴──────────┴────────────────┴───────┤
 │                                              href                                              │
 └────────────────────────────────────────────────────────────────────────────────────────────────┘
-(All spaces in the "" line should be ignored. They are purely for formatting.)
+（""の行内の空白は全て無視してください。見やすくしているだけです。）
 ```
 
-Parsing the URL string using the WHATWG API:
+WHATWG APIを利用してURLストリングをパースするには以下のようにします:
 
 ```js
 const myURL =
   new URL('https://user:pass@sub.example.com:8080/p/a/t/h?query=string#hash');
 ```
 
-Parsing the URL string using the Legacy API:
+レガシーAPIを利用してURLストリングをパースするには以下のようにします:
 
 ```js
 const url = require('url');
@@ -71,76 +62,53 @@ const myURL =
   url.parse('https://user:pass@sub.example.com:8080/p/a/t/h?query=string#hash');
 ```
 
-## The WHATWG URL API
+## WHATWG URL API
 
-### Class: `URL`
-<!-- YAML
-added:
-  - v7.0.0
-  - v6.13.0
-changes:
-  - version: v10.0.0
-    pr-url: https://github.com/nodejs/node/pull/18281
-    description: The class is now available on the global object.
--->
+### クラス: `URL`
 
-Browser-compatible `URL` class, implemented by following the WHATWG URL
-Standard. [Examples of parsed URLs][] may be found in the Standard itself.
-The `URL` class is also available on the global object.
+WHATWG URL Standardに従って実装されたブラウザ互換`URL`クラスです。
+[パースされたURLの例][]はこの標準仕様自体にあります。`URL`クラスはグローバルオブジェクトでも使用できます。
 
-In accordance with browser conventions, all properties of `URL` objects
-are implemented as getters and setters on the class prototype, rather than as
-data properties on the object itself. Thus, unlike [legacy `urlObject`][]s,
-using the `delete` keyword on any properties of `URL` objects (e.g. `delete
-myURL.protocol`, `delete myURL.pathname`, etc) has no effect but will still
-return `true`.
+ブラウザの規則に従い、`URL`オブジェクトの全プロパティはこのオブジェクト自体のデータプロパティではなく、クラスプロトタイプのゲッターおよびセッターとして実装されています。
+つまり、[レガシー`urlObject`][]とは異なり、`URL`オブジェクトのプロパティに対して`delete`演算子を利用（例 `delete myURL.protocol`や`delete myURL.pathname`等）しても効果がありませんが、`true`が返却されます。
 
 #### `new URL(input[, base])`
 
-* `input` {string} The absolute or relative input URL to parse. If `input`
-  is relative, then `base` is required. If `input` is absolute, the `base`
-  is ignored.
-* `base` {string|URL} The base URL to resolve against if the `input` is not
-  absolute.
+* `input` {string} パースする絶対URLまたは相対URL。
+  `input`が相対URLの場合、`base`が必須です。`input`が絶対URLの場合、`base`は無視されます。
+* `base` {string|URL} `input`が絶対URLでない場合に結合するベースURL。
 
-Creates a new `URL` object by parsing the `input` relative to the `base`. If
-`base` is passed as a string, it will be parsed equivalent to `new URL(base)`.
+`base`に対する相対URLである`input`のパースによって新しい`URL`オブジェクトを生成します。`base`が文字列として受け渡された場合、`new URL(base)`と同じようにパースされます。
 
 ```js
 const myURL = new URL('/foo', 'https://example.org/');
 // https://example.org/foo
 ```
 
-The URL constructor is accessible as a property on the global object.
-It can also be imported from the built-in url module:
+URLコンストラクタはグローバルオブジェクトのプロパティとしてアクセスできます。ビルトインのurlモジュールからインポートすることも可能です。
 
 ```js
-console.log(URL === require('url').URL); // Prints 'true'.
+console.log(URL === require('url').URL); // 出力 'true'.
 ```
 
-A `TypeError` will be thrown if the `input` or `base` are not valid URLs. Note
-that an effort will be made to coerce the given values into strings. For
-instance:
+`input`または`base`が正しいURLではなかった場合、`TypeError`がスローされます。与えられた値を文字列にどうにか変換しようとすることに注意してください。
+以下に例を示します:
 
 ```js
 const myURL = new URL({ toString: () => 'https://example.org/' });
 // https://example.org/
 ```
 
-Unicode characters appearing within the host name of `input` will be
-automatically converted to ASCII using the [Punycode][] algorithm.
+`input`のホスト名に現れるUnicode文字は、[Punycode][]アルゴリズムによって自動的にASCIIコードに変換されます。
 
 ```js
 const myURL = new URL('https://測試');
 // https://xn--g6w251d/
 ```
 
-This feature is only available if the `node` executable was compiled with
-[ICU][] enabled. If not, the domain names are passed through unchanged.
+この機能は、[ICU][]が有効化された状態で`node`実行可能ファイルにコンパイルされている場合のみ利用できます。無効化されている場合、ドメイン名は変更されずに受け渡されます。
 
-In cases where it is not known in advance if `input` is an absolute URL
-and a `base` is provided, it is advised to validate that the `origin` of
-the `URL` object is what is expected.
+`input`が絶対URLであり、`base`が渡されているかどうかが事前にわからない場合、`URL`オブジェクトの`origin`が期待通りであること検証することを推奨します。
 
 ```js
 let myURL = new URL('http://Example.com/', 'https://example.org/');
@@ -166,169 +134,151 @@ myURL = new URL('foo:Example.com/', 'https://example.org/');
 
 * {string}
 
-Gets and sets the fragment portion of the URL.
+URLのフラグメント部分の取得と設定をおこないます。
 
 ```js
 const myURL = new URL('https://example.org/foo#bar');
 console.log(myURL.hash);
-// Prints #bar
+// 出力 #bar
 
 myURL.hash = 'baz';
 console.log(myURL.href);
-// Prints https://example.org/foo#baz
+// 出力 https://example.org/foo#baz
 ```
 
-Invalid URL characters included in the value assigned to the `hash` property
-are [percent-encoded][]. The selection of which characters to
-percent-encode may vary somewhat from what the [`url.parse()`][] and
-[`url.format()`][] methods would produce.
+`hash`プロパティに設定される値に含まれる不正なURL文字は[パーセントエンコード][]されます。パーセントエンコードされる文字は、[`url.parse()`][]メソッドと[`url.format()`][]メソッドが生成するものとは多少異なる可能性があります。
 
 #### `url.host`
 
 * {string}
 
-Gets and sets the host portion of the URL.
+URLのホスト部分の取得と設定をおこないます。
 
 ```js
 const myURL = new URL('https://example.org:81/foo');
 console.log(myURL.host);
-// Prints example.org:81
+// 出力 example.org:81
 
 myURL.host = 'example.com:82';
 console.log(myURL.href);
-// Prints https://example.com:82/foo
+// 出力 https://example.com:82/foo
 ```
 
-Invalid host values assigned to the `host` property are ignored.
+`host`プロパティに与えられた不正な値は無視されます。
 
 #### `url.hostname`
 
 * {string}
 
-Gets and sets the host name portion of the URL. The key difference between
-`url.host` and `url.hostname` is that `url.hostname` does *not* include the
-port.
+URLのホスト名の取得と設定をおこないます。
+`url.host`と`url.hostname`の主な違いは`url.hostname`はポート番号を**含まない**ことです。
 
 ```js
 const myURL = new URL('https://example.org:81/foo');
 console.log(myURL.hostname);
-// Prints example.org
+// 出力 example.org
 
-// Setting the hostname does not change the port
+// hostnameの設定ではポート番号は変更されない
 myURL.hostname = 'example.com:82';
 console.log(myURL.href);
-// Prints https://example.com:81/foo
+// 出力 https://example.com:81/foo
 
-// Use myURL.host to change the hostname and port
+// ホスト名およびポート番号を変更するためにはmyURL.hostを使う
 myURL.host = 'example.org:82';
 console.log(myURL.href);
-// Prints https://example.org:82/foo
+// 出力 https://example.org:82/foo
 ```
 
-Invalid host name values assigned to the `hostname` property are ignored.
+`hostname`プロパティに与えられた不正な値は無視されます。
 
 #### `url.href`
 
 * {string}
 
-Gets and sets the serialized URL.
+シリアライズされたURLの取得と設定をおこないます。
 
 ```js
 const myURL = new URL('https://example.org/foo');
 console.log(myURL.href);
-// Prints https://example.org/foo
+// 出力 https://example.org/foo
 
 myURL.href = 'https://example.com/bar';
 console.log(myURL.href);
-// Prints https://example.com/bar
+// 出力 https://example.com/bar
 ```
 
-Getting the value of the `href` property is equivalent to calling
-[`url.toString()`][].
+`href`プロパティの値を取得することは[`url.toString()`][]を呼び出すことと同等です。
 
-Setting the value of this property to a new value is equivalent to creating a
-new `URL` object using [`new URL(value)`][`new URL()`]. Each of the `URL`
-object's properties will be modified.
+このプロパティの値を設定することは、[`new URL(value)`][`new URL()`]を使用して新たな`URL`オブジェクトを生成することと同等です。`URL`オブジェクトの各プロパティが変更されます。
 
-If the value assigned to the `href` property is not a valid URL, a `TypeError`
-will be thrown.
+不正なURLを`href`プロパティに値を設定する場合、`TypeError`がスローされます。
 
 #### `url.origin`
 
 * {string}
 
-Gets the read-only serialization of the URL's origin.
+URLのオリジン部分の読み取り専用のシリアライズされた値の取得をおこないます。
 
 ```js
 const myURL = new URL('https://example.org/foo/bar?baz');
 console.log(myURL.origin);
-// Prints https://example.org
+// 出力 https://example.org
 ```
 
 ```js
 const idnURL = new URL('https://測試');
 console.log(idnURL.origin);
-// Prints https://xn--g6w251d
+// 出力 https://xn--g6w251d
 
 console.log(idnURL.hostname);
-// Prints xn--g6w251d
+// 出力 xn--g6w251d
 ```
 
 #### `url.password`
 
 * {string}
 
-Gets and sets the password portion of the URL.
+URLのパスワード部分の取得と設定をおこないます。
 
 ```js
 const myURL = new URL('https://abc:xyz@example.com');
 console.log(myURL.password);
-// Prints xyz
+// 出力 xyz
 
 myURL.password = '123';
 console.log(myURL.href);
-// Prints https://abc:123@example.com
+// 出力 https://abc:123@example.com
 ```
 
-Invalid URL characters included in the value assigned to the `password` property
-are [percent-encoded][]. The selection of which characters to
-percent-encode may vary somewhat from what the [`url.parse()`][] and
-[`url.format()`][] methods would produce.
+`password`プロパティに与えられた値に含まれる不正なURL文字は[パーセントエンコード][]されます。パーセントエンコードされる文字は、[`url.parse()`][]メソッドと[`url.format()`][]メソッドが生成するものとは多少異なる可能性があります。
 
 #### `url.pathname`
 
 * {string}
 
-Gets and sets the path portion of the URL.
+URLのパス部分の取得と設定をおこないます。
 
 ```js
 const myURL = new URL('https://example.org/abc/xyz?123');
 console.log(myURL.pathname);
-// Prints /abc/xyz
+// 出力 /abc/xyz
 
 myURL.pathname = '/abcdef';
 console.log(myURL.href);
-// Prints https://example.org/abcdef?123
+// 出力 https://example.org/abcdef?123
 ```
 
-Invalid URL characters included in the value assigned to the `pathname`
-property are [percent-encoded][]. The selection of which characters
-to percent-encode may vary somewhat from what the [`url.parse()`][] and
-[`url.format()`][] methods would produce.
+`pathname`プロパティに与えられた値に含まれる不正なURL文字は[パーセントエンコード][]されます。パーセントエンコードされる文字は、[`url.parse()`][]メソッドと[`url.format()`][]メソッドが生成するものとは多少異なる可能性があります。
 
 #### `url.port`
 
 * {string}
 
-Gets and sets the port portion of the URL.
+URLのポート番号部分の取得と設定をおこないます。
 
-The port value may be a number or a string containing a number in the range
-`0` to `65535` (inclusive). Setting the value to the default port of the
-`URL` objects given `protocol` will result in the `port` value becoming
-the empty string (`''`).
+ポートの値は、`0`から`65535`の範囲の数値または数値を含む文字列とします。以下の`protocol`の`URL`オブジェクトのデフォルトポート番号に対して値を設定すると、`port`値は空文字列（`''`）となります。
 
-The port value can be an empty string in which case the port depends on
-the protocol/scheme:
+プロトコル/スキーマによってポート番号が決まっている場合、ポートの値は空文字列にできます。
 
 | protocol | port |
 | -------- | ---- |
@@ -340,93 +290,83 @@ the protocol/scheme:
 | "ws"     | 80   |
 | "wss"    | 443  |
 
-Upon assigning a value to the port, the value will first be converted to a
-string using `.toString()`.
+ポートへの値を設定すると、値はまず最初に`.toString()`を利用して文字列に変換されます。
 
-If that string is invalid but it begins with a number, the leading number is
-assigned to `port`.
-If the number lies outside the range denoted above, it is ignored.
+この文字列が不正だが数値から始まる場合、先頭の数値が`port`に設定されます。
+数値が上述の範囲外だった場合、無視されます。
 
 ```js
 const myURL = new URL('https://example.org:8888');
 console.log(myURL.port);
-// Prints 8888
+// 出力 8888
 
-// Default ports are automatically transformed to the empty string
-// (HTTPS protocol's default port is 443)
+// デフォルトポートは自動的に空文字列に変換されます
+// （HTTPSプロトコルのデフォルトポートは443）
 myURL.port = '443';
 console.log(myURL.port);
-// Prints the empty string
+// 出力 the empty string
 console.log(myURL.href);
-// Prints https://example.org/
+// 出力 https://example.org/
 
 myURL.port = 1234;
 console.log(myURL.port);
-// Prints 1234
+// 出力 1234
 console.log(myURL.href);
-// Prints https://example.org:1234/
+// 出力 https://example.org:1234/
 
-// Completely invalid port strings are ignored
+// portに対する完全に無効な文字列は無視されます
 myURL.port = 'abcd';
 console.log(myURL.port);
-// Prints 1234
+// 出力 1234
 
-// Leading numbers are treated as a port number
+// 先頭の値がポート番号として利用できます
 myURL.port = '5678abcd';
 console.log(myURL.port);
-// Prints 5678
+// 出力 5678
 
-// Non-integers are truncated
+// 整数ではないとき、切り捨てられます
 myURL.port = 1234.5678;
 console.log(myURL.port);
-// Prints 1234
+// 出力 1234
 
-// Out-of-range numbers which are not represented in scientific notation
-// will be ignored.
-myURL.port = 1e10; // 10000000000, will be range-checked as described below
+//  指数表記によって表示されるようなポート番号範囲外の数値は無視されます
+myURL.port = 1e10; // 10000000000は前述の範囲判定に引っ掛かります
 console.log(myURL.port);
-// Prints 1234
+// 出力 1234
 ```
 
-Numbers which contain a decimal point,
-such as floating-point numbers or numbers in scientific notation,
-are not an exception to this rule.
-Leading numbers up to the decimal point will be set as the URL's port,
-assuming they are valid:
+浮動小数点数や指数表記の数のように小数点を含む数値もこのルールの例外ではありません。
+小数点までの先頭の数値が適切であればURLのポート番号としてセットされます: 
 
 ```js
 myURL.port = 4.567e21;
 console.log(myURL.port);
-// Prints 4 (because it is the leading number in the string '4.567e21')
+// 出力 4 (because it is the leading number in the string '4.567e21')
 ```
 
 #### `url.protocol`
 
 * {string}
 
-Gets and sets the protocol portion of the URL.
+URLのプロトコル部分の取得と設定をおこないます。
 
 ```js
 const myURL = new URL('https://example.org');
 console.log(myURL.protocol);
-// Prints https:
+// 出力 https:
 
 myURL.protocol = 'ftp';
 console.log(myURL.href);
-// Prints ftp://example.org/
+// 出力 ftp://example.org/
 ```
 
-Invalid URL protocol values assigned to the `protocol` property are ignored.
+`protocol`プロパティに与えられた不正な値は無視されます。
 
-##### Special schemes
+##### 特殊なスキーム
 
-The [WHATWG URL Standard][] considers a handful of URL protocol schemes to be
-_special_ in terms of how they are parsed and serialized. When a URL is
-parsed using one of these special protocols, the `url.protocol` property
-may be changed to another special protocol but cannot be changed to a
-non-special protocol, and vice versa.
+[WHATWG URL Standard][]は、パースやシリアライズをおこなう観点で_特別_として扱う少数のURLプロトコルスキームを考慮しています。これらのプロトコルの1つを使ってURLをパースするとき、`url.protocol`プロパティは別の特別なプロトコルに変更できますが、反対に特別ではないプロトコルへは変更できません。
 
-For instance, changing from `http` to `https` works:
+例えば、`http`から`https`への変更は可能です:
 
 ```js
 const u = new URL('http://example.org');
@@ -435,8 +375,7 @@ console.log(u.href);
 // https://example.org
 ```
 
-However, changing from `http` to a hypothetical `fish` protocol does not
-because the new protocol is not special.
+しかし、`http`から架空の`fish`プロトコルへの変更はできません。なぜならば、この新しいプロトコルは特別ではないからです。
 
 ```js
 const u = new URL('http://example.org');
@@ -445,8 +384,7 @@ console.log(u.href);
 // http://example.org
 ```
 
-Likewise, changing from a non-special protocol to a special protocol is also
-not permitted:
+同様に、特別ではないプロトコルから特別なプロトコルへの変更も許可されていません:
 
 ```js
 const u = new URL('fish://example.org');
@@ -455,99 +393,80 @@ console.log(u.href);
 // fish://example.org
 ```
 
-According to the WHATWG URL Standard, special protocol schemes are `ftp`,
-`file`, `gopher`, `http`, `https`, `ws`, and `wss`.
+WHATWG URL Standardでは、特別なプロトコルスキームは、`ftp`、`file`、`gopher`、`http`、`https`、`ws`と`wss`です。
 
 #### `url.search`
 
 * {string}
 
-Gets and sets the serialized query portion of the URL.
+URLのシリアライズされたクエリ部分の取得と設定をおこないます。
 
 ```js
 const myURL = new URL('https://example.org/abc?123');
 console.log(myURL.search);
-// Prints ?123
+// 出力 ?123
 
 myURL.search = 'abc=xyz';
 console.log(myURL.href);
-// Prints https://example.org/abc?abc=xyz
+// 出力 https://example.org/abc?abc=xyz
 ```
 
-Any invalid URL characters appearing in the value assigned the `search`
-property will be [percent-encoded][]. The selection of which
-characters to percent-encode may vary somewhat from what the [`url.parse()`][]
-and [`url.format()`][] methods would produce.
+`search`プロパティに与えられた値に含まれる不正なURL文字は[パーセントエンコード][]されます。パーセントエンコードされる文字は、[`url.parse()`][]メソッドと[`url.format()`][]メソッドが生成するものとは多少異なる可能性があります。
 
 #### `url.searchParams`
 
 * {URLSearchParams}
 
-Gets the [`URLSearchParams`][] object representing the query parameters of the
-URL. This property is read-only but the `URLSearchParams` object it provides
-can be used to mutate the URL instance; to replace the entirety of query
-parameters of the URL, use the [`url.search`][] setter. See
-[`URLSearchParams`][] documentation for details.
+URLのクエリパラメータを表す[`URLSearchParams`][]オブジェクトを取得します。
+このプロパティは読み取り専用ですが、プロパティが提供する`URLSearchParams`オブジェクトを利用してURLインスタンスを変更することができます; URLのクエリパラメータ全てを変更するには[`url.search`][]セッターを利用します。詳細は[`URLSearchParams`][]ドキュメントを参照してください。
 
-Use care when using `.searchParams` to modify the `URL` because,
-per the WHATWG specification, the `URLSearchParams` object uses
-different rules to determine which characters to percent-encode. For
-instance, the `URL` object will not percent encode the ASCII tilde (`~`)
-character, while `URLSearchParams` will always encode it:
+`URL`を変更するために`.searchParams`を利用するときは注意が必要です。WHATWG仕様に従い、`URLSearchParams`オブジェクトはパーセントエンコードする文字が異なります。例えば、`URL`オブジェクトはASCIIチルダ（`~`）をパーセントエンコードしませんが、`URLSearchParams`は常にエンコードします:
 
 ```js
 const myUrl = new URL('https://example.org/abc?foo=~bar');
 
-console.log(myUrl.search);  // prints ?foo=~bar
+console.log(myUrl.search);  // 出力 ?foo=~bar
 
-// Modify the URL via searchParams...
+// searchParamsを使ってURLを変更します
 myUrl.searchParams.sort();
 
-console.log(myUrl.search);  // prints ?foo=%7Ebar
+console.log(myUrl.search);  // 出力 ?foo=%7Ebar
 ```
 
 #### `url.username`
 
 * {string}
 
-Gets and sets the username portion of the URL.
+URLのユーザ名部分の取得と設定をおこないます。
 
 ```js
 const myURL = new URL('https://abc:xyz@example.com');
 console.log(myURL.username);
-// Prints abc
+// 出力 abc
 
 myURL.username = '123';
 console.log(myURL.href);
-// Prints https://123:xyz@example.com/
+// 出力 https://123:xyz@example.com/
 ```
 
-Any invalid URL characters appearing in the value assigned the `username`
-property will be [percent-encoded][]. The selection of which
-characters to percent-encode may vary somewhat from what the [`url.parse()`][]
-and [`url.format()`][] methods would produce.
+`username`プロパティに与えられた値に含まれる不正なURL文字は[パーセントエンコード][]されます。パーセントエンコードされる文字は、[`url.parse()`][]メソッドと[`url.format()`][]メソッドが生成するものとは多少異なる可能性があります。
 
 #### `url.toString()`
 
-* Returns: {string}
+* 戻り値: {string}
 
-The `toString()` method on the `URL` object returns the serialized URL. The
-value returned is equivalent to that of [`url.href`][] and [`url.toJSON()`][].
+`URL`オブジェクトの`toString()`メソッドはシリアライズされたURLを返します。
+返却された値は[`url.href`][]と[`url.toJSON()`][]と同等です。
 
-Because of the need for standard compliance, this method does not allow users
-to customize the serialization process of the URL. For more flexibility,
-[`require('url').format()`][] method might be of interest.
+標準に従う必要があるため、このメソッドはURLのシリアライズ処理のカスタマイズを許可していません。柔軟性を高くするには、[`require('url').format()`][]メソッドが参考になるかもしれません。
 
 #### `url.toJSON()`
 
-* Returns: {string}
+* 戻り値: {string}
 
-The `toJSON()` method on the `URL` object returns the serialized URL. The
-value returned is equivalent to that of [`url.href`][] and
-[`url.toString()`][].
+`URL`オブジェクトの`toJSON()`メソッドはシリアライズされたURLを返却します。返却された値は[`url.href`][]および[`url.toString()`][]と同等です。
 
-This method is automatically called when an `URL` object is serialized
-with [`JSON.stringify()`][].
+このメソッドは、[`JSON.stringify()`][]によって`URL`オブジェクトがシリアライズされるさいに自動的に呼び出されます。
 
 ```js
 const myURLs = [
@@ -555,103 +474,82 @@ const myURLs = [
   new URL('https://test.example.org')
 ];
 console.log(JSON.stringify(myURLs));
-// Prints ["https://www.example.com/","https://test.example.org/"]
+// 出力 ["https://www.example.com/","https://test.example.org/"]
 ```
 
-### Class: `URLSearchParams`
-<!-- YAML
-added:
-  - v7.5.0
-  - v6.13.0
-changes:
-  - version: v10.0.0
-    pr-url: https://github.com/nodejs/node/pull/18281
-    description: The class is now available on the global object.
--->
+### クラス: `URLSearchParams`
 
-The `URLSearchParams` API provides read and write access to the query of a
-`URL`. The `URLSearchParams` class can also be used standalone with one of the
-four following constructors.
-The `URLSearchParams` class is also available on the global object.
+`URLSearchParams`APIは`URL`のクエリへの読み取りと書き込みを提供します。
+`URLSearchParams`クラスは以下の4つのコンストラクタから1つを選んで使い、単独で利用することもできます。`URLSearchParams`クラスもグローバルオブジェクトととして利用することができます。
 
-The WHATWG `URLSearchParams` interface and the [`querystring`][] module have
-similar purpose, but the purpose of the [`querystring`][] module is more
-general, as it allows the customization of delimiter characters (`&` and `=`).
-On the other hand, this API is designed purely for URL query strings.
+WHATWGの`URLSearchParams`インタフェースと[`querystring`][]モジュールは似た目的を持っていますが、[`querystring`][]モジュールの目的はより汎用的で、区切り文字（`&`と`=`）のカスタマイズを許可しています。反対にこのAPIはURLクエリ文字列だけのために設計されています。
 
 ```js
 const myURL = new URL('https://example.org/?abc=123');
 console.log(myURL.searchParams.get('abc'));
-// Prints 123
+// 出力 123
 
 myURL.searchParams.append('abc', 'xyz');
 console.log(myURL.href);
-// Prints https://example.org/?abc=123&abc=xyz
+// 出力 https://example.org/?abc=123&abc=xyz
 
 myURL.searchParams.delete('abc');
 myURL.searchParams.set('a', 'b');
 console.log(myURL.href);
-// Prints https://example.org/?a=b
+// 出力 https://example.org/?a=b
 
 const newSearchParams = new URLSearchParams(myURL.searchParams);
-// The above is equivalent to
+// これは以下と同等です
 // const newSearchParams = new URLSearchParams(myURL.search);
 
 newSearchParams.append('a', 'c');
 console.log(myURL.href);
-// Prints https://example.org/?a=b
+// 出力 https://example.org/?a=b
 console.log(newSearchParams.toString());
-// Prints a=b&a=c
+// 出力 a=b&a=c
 
-// newSearchParams.toString() is implicitly called
+// newSearchParams.toString()が暗黙的に呼び出されています
 myURL.search = newSearchParams;
 console.log(myURL.href);
-// Prints https://example.org/?a=b&a=c
+// 出力 https://example.org/?a=b&a=c
 newSearchParams.delete('a');
 console.log(myURL.href);
-// Prints https://example.org/?a=b&a=c
+// 出力 https://example.org/?a=b&a=c
 ```
 
 #### `new URLSearchParams()`
 
-Instantiate a new empty `URLSearchParams` object.
+空の`URLSearchParams`オブジェクトを新しくインスタンス生成します。
 
 #### `new URLSearchParams(string)`
 
 * `string` {string} A query string
 
-Parse the `string` as a query string, and use it to instantiate a new
-`URLSearchParams` object. A leading `'?'`, if present, is ignored.
+クエリ文字列として`string`をパースし、`URLSearchParams`オブジェクトを新しく生成するために使用します。
+先頭の`'?'`が存在する場合、無視します。
 
 ```js
 let params;
 
 params = new URLSearchParams('user=abc&query=xyz');
 console.log(params.get('user'));
-// Prints 'abc'
+// 出力 'abc'
 console.log(params.toString());
-// Prints 'user=abc&query=xyz'
+// 出力 'user=abc&query=xyz'
 
 params = new URLSearchParams('?user=abc&query=xyz');
 console.log(params.toString());
-// Prints 'user=abc&query=xyz'
+// 出力 'user=abc&query=xyz'
 ```
 
 #### `new URLSearchParams(obj)`
-<!-- YAML
-added:
-  - v7.10.0
-  - v6.13.0
--->
 
-* `obj` {Object} An object representing a collection of key-value pairs
+* `obj` {Object} キーとバリューのペアのコレクションとなっているオブジェクト
 
-Instantiate a new `URLSearchParams` object with a query hash map. The key and
-value of each property of `obj` are always coerced to strings.
+クエリのハッシュマップを使って`URLSearchParams`オブジェクトを新規に生成します。
+`obj`の各プロパティのキーとバリューは常に文字列に強制的に変換します。
 
-Unlike [`querystring`][] module, duplicate keys in the form of array values are
-not allowed. Arrays are stringified using [`array.toString()`][], which simply
-joins all array elements with commas.
+[`querystring`][]モジュールと異なり、配列値の形式としてキーを重複させることは許可されていません。配列は[`array.toString()`][]を使用し、配列の全要素をカンマで結合して文字列化されます。
 
 ```js
 const params = new URLSearchParams({
@@ -659,50 +557,41 @@ const params = new URLSearchParams({
   query: ['first', 'second']
 });
 console.log(params.getAll('query'));
-// Prints [ 'first,second' ]
+// 出力 [ 'first,second' ]
 console.log(params.toString());
-// Prints 'user=abc&query=first%2Csecond'
+// 出力 'user=abc&query=first%2Csecond'
 ```
 
 #### `new URLSearchParams(iterable)`
-<!-- YAML
-added:
-  - v7.10.0
-  - v6.13.0
--->
 
-* `iterable` {Iterable} An iterable object whose elements are key-value pairs
+* `iterable` {Iterable} キーとバリューのペアとなっている要素をもつイテラブルなオブジェクト
 
-Instantiate a new `URLSearchParams` object with an iterable map in a way that
-is similar to [`Map`][]'s constructor. `iterable` can be an `Array` or any
-iterable object. That means `iterable` can be another `URLSearchParams`, in
-which case the constructor will simply create a clone of the provided
-`URLSearchParams`. Elements of `iterable` are key-value pairs, and can
-themselves be any iterable object.
+[`Map`][]のコンストラクタと同様の方法でイテラブルなマップから`URLSearchParams`オブジェクトを新規生成します。
+`iterable`は`Array`またはその他イテラブルなオブジェクトを渡すことができます。つまり、`iterable`が他の`URLSearchParams`の場合があります。この場合、このコンストラクタは与えられた`URLSearchParams`の単純なクローンを生成します。`iterable`の要素はキー-バリューのペアであり、それら自体もイテラブルなオブジェクトとすることができます。
 
-Duplicate keys are allowed.
+キーの重複は許可されています。
 
 ```js
 let params;
 
-// Using an array
+// 配列を用いる
 params = new URLSearchParams([
   ['user', 'abc'],
   ['query', 'first'],
   ['query', 'second']
 ]);
 console.log(params.toString());
-// Prints 'user=abc&query=first&query=second'
+// 出力 'user=abc&query=first&query=second'
 
-// Using a Map object
+// Mapオブジェクトを用いる
 const map = new Map();
 map.set('user', 'abc');
 map.set('query', 'xyz');
 params = new URLSearchParams(map);
 console.log(params.toString());
-// Prints 'user=abc&query=xyz'
+// 出力 'user=abc&query=xyz'
 
-// Using a generator function
+// ジェネレータ関数を用いる
 function* getQueryPairs() {
   yield ['user', 'abc'];
   yield ['query', 'first'];
@@ -710,9 +599,9 @@ function* getQueryPairs() {
 }
 params = new URLSearchParams(getQueryPairs());
 console.log(params.toString());
-// Prints 'user=abc&query=first&query=second'
+// 出力 'user=abc&query=first&query=second'
 
-// Each key-value pair must have exactly two elements
+// 各キー-バリューペアは正確に2つの要素である必要があります
 new URLSearchParams([
   ['user', 'abc', 'error']
 ]);
@@ -725,37 +614,36 @@ new URLSearchParams([
 * `name` {string}
 * `value` {string}
 
-Append a new name-value pair to the query string.
+新しいネーム-バリューのペアをクエリ文字列に追加します。
 
 #### `urlSearchParams.delete(name)`
 
 * `name` {string}
 
-Remove all name-value pairs whose name is `name`.
+ネームが`name`と一致する全てのネーム-バリューのペアを削除します。
 
 #### `urlSearchParams.entries()`
 
-* Returns: {Iterator}
+* 戻り値: {Iterator}
 
-Returns an ES6 `Iterator` over each of the name-value pairs in the query.
-Each item of the iterator is a JavaScript `Array`. The first item of the `Array`
-is the `name`, the second item of the `Array` is the `value`.
+クエリ内の各ネーム-バリューペアを持つES6の`Iterator`を返却します。
+イテレータの各要素はJavaScriptの`Array`となっています。`Array`の最初の要素は`name`であり、`Array`の2つ目の要素は`value`です。
 
-Alias for [`urlSearchParams[@@iterator]()`][`urlSearchParams@@iterator()`].
+[`urlSearchParams[@@iterator]()`][`urlSearchParams@@iterator()`]のエイリアスです。
 
 #### `urlSearchParams.forEach(fn[, thisArg])`
 
-* `fn` {Function} Invoked for each name-value pair in the query
-* `thisArg` {Object} To be used as `this` value for when `fn` is called
+* `fn` {Function} クエリのネーム-バリューペアごとに呼び出されます
+* `thisArg` {Object} `fn`が呼び出されたときの`this`の値として利用されます
 
-Iterates over each name-value pair in the query and invokes the given function.
+クエリ内のネーム-バリューの各ペアをイテレートし、渡された関数を呼び出します。
 
 ```js
 const myURL = new URL('https://example.org/?a=b&c=d');
 myURL.searchParams.forEach((value, name, searchParams) => {
   console.log(name, value, myURL.searchParams === searchParams);
 });
-// Prints:
+// 出力:
 //   a b true
 //   c d true
 ```
@@ -763,39 +651,38 @@ myURL.searchParams.forEach((value, name, searchParams) => {
 #### `urlSearchParams.get(name)`
 
 * `name` {string}
-* Returns: {string} or `null` if there is no name-value pair with the given
-  `name`.
+* 戻り値: {string}または与えられた`name`に一致するネーム-バリューのペアが存在しない場合には`null`
 
-Returns the value of the first name-value pair whose name is `name`. If there
-are no such pairs, `null` is returned.
+ネームが`name`と一致する最初のネーム-バリューペアの値を返します。
+一致するペアが存在しない場合、`null`が返却されます。
 
 #### `urlSearchParams.getAll(name)`
 
 * `name` {string}
-* Returns: {string[]}
+* 戻り値: {string[]}
 
-Returns the values of all name-value pairs whose name is `name`. If there are
-no such pairs, an empty array is returned.
+ネームが`name`と一致する最初のネーム-バリューペアの値を返します。
+一致するペアが存在しない場合、空配列が返却されます。
 
 #### `urlSearchParams.has(name)`
 
 * `name` {string}
-* Returns: {boolean}
+* 戻り値: {boolean}
 
-Returns `true` if there is at least one name-value pair whose name is `name`.
+少なくとも1つのネームが`name`と一致する最初のネーム-バリューペアが存在する場合、`true`を返却します。
 
 #### `urlSearchParams.keys()`
 
-* Returns: {Iterator}
+* 戻り値: {Iterator}
 
-Returns an ES6 `Iterator` over the names of each name-value pair.
+各ネーム-バリューペアのネームを返すES6 `Iterator`を返却します。
 
 ```js
 const params = new URLSearchParams('foo=bar&foo=baz');
 for (const name of params.keys()) {
   console.log(name);
 }
-// Prints:
+// 出力:
 //   foo
 //   foo
 ```
@@ -805,10 +692,8 @@ for (const name of params.keys()) {
 * `name` {string}
 * `value` {string}
 
-Sets the value in the `URLSearchParams` object associated with `name` to
-`value`. If there are any pre-existing name-value pairs whose names are `name`,
-set the first such pair's value to `value` and remove all others. If not,
-append the name-value pair to the query string.
+`URLSearchParams`オブジェクトに`name`と`value`を設定します。
+`name`と一致するネーム-バリューのペアが既に存在している場合、その最初のペアのバリューを`value`に置換して他すべてのペアを削除します。存在しない場合、クエリ文字列にネーム-バリューのペアを追加します。
 
 ```js
 const params = new URLSearchParams();
@@ -816,90 +701,77 @@ params.append('foo', 'bar');
 params.append('foo', 'baz');
 params.append('abc', 'def');
 console.log(params.toString());
-// Prints foo=bar&foo=baz&abc=def
+// 出力 foo=bar&foo=baz&abc=def
 
 params.set('foo', 'def');
 params.set('xyz', 'opq');
 console.log(params.toString());
-// Prints foo=def&abc=def&xyz=opq
+// 出力 foo=def&abc=def&xyz=opq
 ```
 
 #### `urlSearchParams.sort()`
-<!-- YAML
-added:
-  - v7.7.0
-  - v6.13.0
--->
 
-Sort all existing name-value pairs in-place by their names. Sorting is done
-with a [stable sorting algorithm][], so relative order between name-value pairs
-with the same name is preserved.
+既存のネーム-バリューペアをそのネームに基づいてソートします。
+ソートは[安定ソートアルゴリズム][]で実行されます。つまり、同じネームのネーム-バリューペア同士の相対的な順序は維持されます。
 
-This method can be used, in particular, to increase cache hits.
+このメソッドは特にキャッシュヒットを増やすために使用できます。
 
 ```js
 const params = new URLSearchParams('query[]=abc&type=search&query[]=123');
 params.sort();
 console.log(params.toString());
-// Prints query%5B%5D=abc&query%5B%5D=123&type=search
+// 出力 query%5B%5D=abc&query%5B%5D=123&type=search
 ```
 
 #### `urlSearchParams.toString()`
 
-* Returns: {string}
+* 戻り値: {string}
 
-Returns the search parameters serialized as a string, with characters
-percent-encoded where necessary.
+必要であれば文字をパーセントエンコードし、文字列にシリアライズされた検索パラメータを返却します。
 
 #### `urlSearchParams.values()`
 
-* Returns: {Iterator}
+* 戻り値: {Iterator}
 
-Returns an ES6 `Iterator` over the values of each name-value pair.
+各ネーム-バリューペアの値をES6 `Iterator`として返却する。
 
 #### `urlSearchParams[Symbol.iterator]()`
 
-* Returns: {Iterator}
+* 戻り値: {Iterator}
 
-Returns an ES6 `Iterator` over each of the name-value pairs in the query string.
-Each item of the iterator is a JavaScript `Array`. The first item of the `Array`
-is the `name`, the second item of the `Array` is the `value`.
+クエリ文字列内の各ネーム-バリューペアをES6 `Iterator`として返却する。
+イテレータの各要素はJavaScriptの`Array`となっています。`Array`の最初の要素は`name`であり、`Array`の2つ目の要素は`value`です。
 
-Alias for [`urlSearchParams.entries()`][].
+[`urlSearchParams.entries()`][]のエイリアスです。
 
 ```js
 const params = new URLSearchParams('foo=bar&xyz=baz');
 for (const [name, value] of params) {
   console.log(name, value);
 }
-// Prints:
+// 出力:
 //   foo bar
 //   xyz baz
 ```
 
 ### `url.domainToASCII(domain)`
-<!-- YAML
-added:
-  - v7.4.0
-  - v6.13.0
--->
 
 * `domain` {string}
-* Returns: {string}
+* 戻り値: {string}
 
-Returns the [Punycode][] ASCII serialization of the `domain`. If `domain` is an
-invalid domain, the empty string is returned.
+`domain`を[Punycode][] ASCIIシリアライズ化して返却します。
+`domain`が不正なドメインの場合、空文字列を返却します。
 
-It performs the inverse operation to [`url.domainToUnicode()`][].
+このメソッドは[`url.domainToUnicode()`][]の逆の処理を実行します。
 
 ```js
 const url = require('url');
 console.log(url.domainToASCII('español.com'));
-// Prints xn--espaol-zwa.com
+// 出力 xn--espaol-zwa.com
 console.log(url.domainToASCII('中文.com'));
-// Prints xn--fiq228c.com
+// 出力 xn--fiq228c.com
 console.log(url.domainToASCII('xn--iñvalid.com'));
-// Prints an empty string
+// 出力 an empty string
 ```
 
 ### `url.domainToUnicode(domain)`
@@ -910,125 +782,100 @@ added:
 -->
 
 * `domain` {string}
-* Returns: {string}
+* 戻り値: {string}
 
-Returns the Unicode serialization of the `domain`. If `domain` is an invalid
-domain, the empty string is returned.
+`domain`をUnicodeシリアライズ化して返却します。
+`domain`が不正なドメインの場合、空文字列を返却します。
 
-It performs the inverse operation to [`url.domainToASCII()`][].
+このメソッドは[`url.domainToASCII()`][]の逆の処理を実行します。
 
 ```js
 const url = require('url');
 console.log(url.domainToUnicode('xn--espaol-zwa.com'));
-// Prints español.com
+// 出力 español.com
 console.log(url.domainToUnicode('xn--fiq228c.com'));
-// Prints 中文.com
+// 出力 中文.com
 console.log(url.domainToUnicode('xn--iñvalid.com'));
-// Prints an empty string
+// 出力 an empty string
 ```
 
 ### `url.fileURLToPath(url)`
-<!-- YAML
-added: v10.12.0
--->
 
-* `url` {URL | string} The file URL string or URL object to convert to a path.
-* Returns: {string} The fully-resolved platform-specific Node.js file path.
+* `url` {URL | string} パスに変換できるファイルのURL文字列またはURLオブジェクト
+* 戻り値: {string} 完全に解決されたプラットフォームごとのNode.jsファイルパス
 
-This function ensures the correct decodings of percent-encoded characters as
-well as ensuring a cross-platform valid absolute path string.
+この関数はパーセントエンコードされた文字の正しいデコードを保証するだけでなく、クロスプラットフォームが有効な絶対パス文字列を保証します。
 
 ```js
-new URL('file:///C:/path/').pathname;    // Incorrect: /C:/path/
-fileURLToPath('file:///C:/path/');       // Correct:   C:\path\ (Windows)
+new URL('file:///C:/path/').pathname;    // 誤: /C:/path/
+fileURLToPath('file:///C:/path/');       // 正: C:\path\ (Windows)
 
-new URL('file://nas/foo.txt').pathname;  // Incorrect: /foo.txt
-fileURLToPath('file://nas/foo.txt');     // Correct:   \\nas\foo.txt (Windows)
+new URL('file://nas/foo.txt').pathname;  // 誤: /foo.txt
+fileURLToPath('file://nas/foo.txt');     // 正: \\nas\foo.txt (Windows)
 
-new URL('file:///你好.txt').pathname;    // Incorrect: /%E4%BD%A0%E5%A5%BD.txt
-fileURLToPath('file:///你好.txt');       // Correct:   /你好.txt (POSIX)
+new URL('file:///你好.txt').pathname;    // 誤: /%E4%BD%A0%E5%A5%BD.txt
+fileURLToPath('file:///你好.txt');       // 正: /你好.txt (POSIX)
 
-new URL('file:///hello world').pathname; // Incorrect: /hello%20world
-fileURLToPath('file:///hello world');    // Correct:   /hello world (POSIX)
+new URL('file:///hello world').pathname; // 誤: /hello%20world
+fileURLToPath('file:///hello world');    // 正: /hello world (POSIX)
 ```
 
 ### `url.format(URL[, options])`
-<!-- YAML
-added: v7.6.0
--->
 
-* `URL` {URL} A [WHATWG URL][] object
+* `URL` {URL} [WHATWG URL][]オブジェクト
 * `options` {Object}
-  * `auth` {boolean} `true` if the serialized URL string should include the
-    username and password, `false` otherwise. **Default:** `true`.
-  * `fragment` {boolean} `true` if the serialized URL string should include the
-    fragment, `false` otherwise. **Default:** `true`.
-  * `search` {boolean} `true` if the serialized URL string should include the
-    search query, `false` otherwise. **Default:** `true`.
-  * `unicode` {boolean} `true` if Unicode characters appearing in the host
-    component of the URL string should be encoded directly as opposed to being
-    Punycode encoded. **Default:** `false`.
-* Returns: {string}
+  * `auth` {boolean} シリアライズされたURL文字列がユーザ名とパスワードを含める必要がある場合は`true`、そうでない場合は`false`
+    **デフォルト:** `true`.
+  * `fragment` {boolean} シリアライズされたURL文字列がフラグメントを含める必要がある場合は`true`、そうでない場合は`false`
+    **デフォルト:** `true`.
+  * `search` {boolean} シリアライズされたURL文字列が検索クエリを含める必要がある場合は`true`、そうでない場合は`false`
+    **デフォルト:** `true`.
+  * `unicode` {boolean} URL文字列のホスト名部分に現れるUnicode文字をPunycodeエンコードではなく、直接エンコードする必要がある場合は`true`
+    **デフォルト:** `false`.
+* 戻り値: {string}
 
-Returns a customizable serialization of a URL `String` representation of a
-[WHATWG URL][] object.
+[WHATWG URL][]オブジェクトのURL `String`表現のカスタマイズ可能なシリアライズされた結果を返却します。
 
-The URL object has both a `toString()` method and `href` property that return
-string serializations of the URL. These are not, however, customizable in
-any way. The `url.format(URL[, options])` method allows for basic customization
-of the output.
+URLオブジェクトは、URLのシリアライズされた文字列を返却する`toString()`メソッドと`href`プロパティの両方を有しています。しかし、これらはいかなる方法でもカスタマイズすることはできません。`url.format(URL[, options])`メソッドは出力の基本的なカスタマイズが可能です。
 
 ```js
 const myURL = new URL('https://a:b@測試?abc#foo');
 
 console.log(myURL.href);
-// Prints https://a:b@xn--g6w251d/?abc#foo
+// 出力 https://a:b@xn--g6w251d/?abc#foo
 
 console.log(myURL.toString());
-// Prints https://a:b@xn--g6w251d/?abc#foo
+// 出力 https://a:b@xn--g6w251d/?abc#foo
 
 console.log(url.format(myURL, { fragment: false, unicode: true, auth: false }));
-// Prints 'https://測試/?abc'
+// 出力 'https://測試/?abc'
 ```
 
 ### `url.pathToFileURL(path)`
-<!-- YAML
-added: v10.12.0
--->
 
-* `path` {string} The path to convert to a File URL.
-* Returns: {URL} The file URL object.
+* `path` {string} ファイルURLに変換するパス
+* 戻り値: {URL} ファイルURLオブジェクト
 
-This function ensures that `path` is resolved absolutely, and that the URL
-control characters are correctly encoded when converting into a File URL.
+この関数は`path`を絶対パスに解決し、ファイルURLに変換する際にURL操作文字を正しくエンコードすることを保証します。
 
 ```js
-new URL(__filename);                // Incorrect: throws (POSIX)
-new URL(__filename);                // Incorrect: C:\... (Windows)
-pathToFileURL(__filename);          // Correct:   file:///... (POSIX)
-pathToFileURL(__filename);          // Correct:   file:///C:/... (Windows)
+new URL(__filename);                // 誤: throws (POSIX)
+new URL(__filename);                // 誤: C:\... (Windows)
+pathToFileURL(__filename);          // 正: file:///... (POSIX)
+pathToFileURL(__filename);          // 正: file:///C:/... (Windows)
 
-new URL('/foo#1', 'file:');         // Incorrect: file:///foo#1
-pathToFileURL('/foo#1');            // Correct:   file:///foo%231 (POSIX)
+new URL('/foo#1', 'file:');         // 誤: file:///foo#1
+pathToFileURL('/foo#1');            // 正: file:///foo%231 (POSIX)
 
-new URL('/some/path%.c', 'file:'); // Incorrect: file:///some/path%.c
-pathToFileURL('/some/path%.c');    // Correct:   file:///some/path%25.c (POSIX)
+new URL('/some/path%.c', 'file:'); // 誤: file:///some/path%.c
+pathToFileURL('/some/path%.c');    // 正: file:///some/path%25.c (POSIX)
 ```
 
-## Legacy URL API
-<!-- YAML
-deprecated: v11.0.0
--->
+## レガシーURL API
 
-### Legacy `urlObject`
-<!-- YAML
-changes:
-  - version: v11.0.0
-    pr-url: https://github.com/nodejs/node/pull/22715
-    description: The Legacy URL API is deprecated. Use the WHATWG URL API.
--->
+### レガシー`urlObject`
 
-> Stability: 0 - Deprecated: Use the WHATWG URL API instead.
+> Stability: 0 - 非推奨: WHATWG URL APIを代わりに利用してください。
 
 The legacy `urlObject` (`require('url').Url`) is created and returned by the
 `url.parse()` function.
@@ -1131,19 +978,6 @@ forward-slash characters (`/`) are required following the colon in the
 `protocol`.
 
 ### `url.format(urlObject)`
-<!-- YAML
-added: v0.1.25
-changes:
-  - version: v11.0.0
-    pr-url: https://github.com/nodejs/node/pull/22715
-    description: The Legacy URL API is deprecated. Use the WHATWG URL API.
-  - version: v7.0.0
-    pr-url: https://github.com/nodejs/node/pull/7234
-    description: URLs with a `file:` scheme will now always use the correct
-                 number of slashes regardless of `slashes` option. A falsy
-                 `slashes` option with no protocol is now also respected at all
-                 times.
--->
 
 > Stability: 0 - Deprecated: Use the WHATWG URL API instead.
 
@@ -1224,24 +1058,8 @@ The formatting process operates as follows:
 * `result` is returned.
 
 ### `url.parse(urlString[, parseQueryString[, slashesDenoteHost]])`
-<!-- YAML
-added: v0.1.25
-changes:
-  - version: v11.14.0
-    pr-url: https://github.com/nodejs/node/pull/26941
-    description: The `pathname` property on the returned URL object is now `/`
-                 when there is no path and the protocol scheme is `ws:` or
-                 `wss:`.
-  - version: v11.0.0
-    pr-url: https://github.com/nodejs/node/pull/22715
-    description: The Legacy URL API is deprecated. Use the WHATWG URL API.
-  - version: v9.0.0
-    pr-url: https://github.com/nodejs/node/pull/13606
-    description: The `search` property on the returned URL object is now `null`
-                 when no query string is present.
--->
 
-> Stability: 0 - Deprecated: Use the WHATWG URL API instead.
+> Stability: 0 - 非推奨: WHATWG URL APIを代わりに利用してください。
 
 * `urlString` {string} The URL string to parse.
 * `parseQueryString` {boolean} If `true`, the `query` property will always
@@ -1268,28 +1086,8 @@ issues can be introduced. Specifically, issues with [host name spoofing][] and
 incorrect handling of usernames and passwords have been identified.
 
 ### `url.resolve(from, to)`
-<!-- YAML
-added: v0.1.25
-changes:
-  - version: v11.0.0
-    pr-url: https://github.com/nodejs/node/pull/22715
-    description: The Legacy URL API is deprecated. Use the WHATWG URL API.
-  - version: v6.6.0
-    pr-url: https://github.com/nodejs/node/pull/8215
-    description: The `auth` fields are now kept intact when `from` and `to`
-                 refer to the same host.
-  - version:
-    - v6.5.0
-    - v4.6.2
-    pr-url: https://github.com/nodejs/node/pull/8214
-    description: The `port` field is copied correctly now.
-  - version: v6.0.0
-    pr-url: https://github.com/nodejs/node/pull/1480
-    description: The `auth` fields is cleared now the `to` parameter
-                 contains a hostname.
--->
 
-> Stability: 0 - Deprecated: Use the WHATWG URL API instead.
+> Stability: 0 - 非推奨: WHATWG URL APIを代わりに利用してください。
 
 * `from` {string} The Base URL being resolved against.
 * `to` {string} The HREF URL being resolved.
@@ -1305,6 +1103,7 @@ url.resolve('http://example.com/one', '/two'); // 'http://example.com/two'
 ```
 
 <a id="whatwg-percent-encoding"></a>
+
 ## Percent-encoding in URLs
 
 URLs are permitted to only contain a certain range of characters. Any character
@@ -1312,7 +1111,7 @@ falling outside of that range must be encoded. How such characters are encoded,
 and which characters to encode depends entirely on where the character is
 located within the structure of the URL.
 
-### Legacy API
+### レガシーAPI
 
 Within the Legacy API, spaces (`' '`) and the following characters will be
 automatically escaped in the properties of URL objects:
@@ -1359,9 +1158,9 @@ using the [Punycode][] algorithm. Note, however, that a host name *may* contain
 ```js
 const myURL = new URL('https://%CF%80.example.com/foo');
 console.log(myURL.href);
-// Prints https://xn--1xa.example.com/foo
+// 出力 https://xn--1xa.example.com/foo
 console.log(myURL.origin);
-// Prints https://xn--1xa.example.com
+// 出力 https://xn--1xa.example.com
 ```
 
 [ICU]: intl.md#intl_options_for_building_node_js
@@ -1387,8 +1186,8 @@ console.log(myURL.origin);
 [`url.toString()`]: #url_url_tostring
 [`urlSearchParams.entries()`]: #url_urlsearchparams_entries
 [`urlSearchParams@@iterator()`]: #url_urlsearchparams_symbol_iterator
-[examples of parsed URLs]: https://url.spec.whatwg.org/#example-url-parsing
+[パースされたURLの例]: https://url.spec.whatwg.org/#example-url-parsing
 [host name spoofing]: https://hackerone.com/reports/678487
-[legacy `urlObject`]: #url_legacy_urlobject
-[percent-encoded]: #whatwg-percent-encoding
-[stable sorting algorithm]: https://en.wikipedia.org/wiki/Sorting_algorithm#Stability
+[レガシー`urlObject`]: #url_legacy_urlobject
+[パーセントエンコード]: #whatwg-percent-encoding
+[安定ソートアルゴリズム]: https://en.wikipedia.org/wiki/Sorting_algorithm#Stability
