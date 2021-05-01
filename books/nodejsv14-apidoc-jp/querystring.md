@@ -4,84 +4,45 @@ title: "Query strings"
 
 # Query string
 
-<!--introduced_in=v0.1.25-->
-
 > Stability: 2 - Stable
 
-<!--name=querystring-->
-
-<!-- source_link=lib/querystring.js -->
-
-The `querystring` module provides utilities for parsing and formatting URL
-query strings. It can be accessed using:
+`querystring`モジュールはURLクエリ文字列のパースと整形のためのユーティリティを提供します。
+以下のように使用することができます:
 
 ```js
 const querystring = require('querystring');
 ```
 
 ## `querystring.decode()`
-<!-- YAML
-added: v0.1.99
--->
 
-The `querystring.decode()` function is an alias for `querystring.parse()`.
+`querystring.decode()`関数は`querystring.parse()`のエイリアスです。
 
 ## `querystring.encode()`
-<!-- YAML
-added: v0.1.99
--->
 
-The `querystring.encode()` function is an alias for `querystring.stringify()`.
+`querystring.encode()`関数は`querystring.stringify()`のエイリアスです。
 
 ## `querystring.escape(str)`
-<!-- YAML
-added: v0.1.25
--->
 
 * `str` {string}
 
-The `querystring.escape()` method performs URL percent-encoding on the given
-`str` in a manner that is optimized for the specific requirements of URL
-query strings.
+`querystring.escape()`メソッドは、URLクエリ文字列の特定の要件に最適化された方法で、与えられた`str`に対してURLパーセントエンコーディングをおこないます。
 
-The `querystring.escape()` method is used by `querystring.stringify()` and is
-generally not expected to be used directly. It is exported primarily to allow
-application code to provide a replacement percent-encoding implementation if
-necessary by assigning `querystring.escape` to an alternative function.
+`querystring.escape()`メソッドは`querystring.stringify()`から呼び出され、基本的に直接呼び出されることは想定されていません。
+このメソッドがエクスポートされている主な理由は、必要に応じてアプリケーションコードが`querystring.escape`の代替となる関数を受け渡してパーセントエンコーディング実装を置換できるようにするためです。
 
 ## `querystring.parse(str[, sep[, eq[, options]]])`
-<!-- YAML
-added: v0.1.25
-changes:
-  - version: v8.0.0
-    pr-url: https://github.com/nodejs/node/pull/10967
-    description: Multiple empty entries are now parsed correctly (e.g. `&=&=`).
-  - version: v6.0.0
-    pr-url: https://github.com/nodejs/node/pull/6055
-    description: The returned object no longer inherits from `Object.prototype`.
-  - version:
-    - v6.0.0
-    - v4.2.4
-    pr-url: https://github.com/nodejs/node/pull/3807
-    description: The `eq` parameter may now have a length of more than `1`.
--->
 
-* `str` {string} The URL query string to parse
-* `sep` {string} The substring used to delimit key and value pairs in the
-  query string. **Default:** `'&'`.
-* `eq` {string}. The substring used to delimit keys and values in the
-  query string. **Default:** `'='`.
+* `str` {string} 変換対象のURLクエリ文字列
+* `sep` {string} クエリ文字列内でキーバリューペアを区切る文字列 **デフォルト:** `'&'`
+* `eq` {string} クエリ文字列内でキーとバリューを区切る文字列 **デフォルト:** `'='`
 * `options` {Object}
-  * `decodeURIComponent` {Function} The function to use when decoding
-    percent-encoded characters in the query string. **Default:**
-    `querystring.unescape()`.
-  * `maxKeys` {number} Specifies the maximum number of keys to parse.
-    Specify `0` to remove key counting limitations. **Default:** `1000`.
+  * `decodeURIComponent` {Function} クエリ文字列でパーセントエンコードされた文字をデコードする際に利用される関数 **デフォルト:**
+    `querystring.unescape()`
+  * `maxKeys` {number} 解析するキーとの最大数を指定します。`0`を指定した場合、キーカウントの制限を排除します。 **デフォルト:** `1000`
 
-The `querystring.parse()` method parses a URL query string (`str`) into a
-collection of key and value pairs.
+`querystring.parse()`メソッドはURLクエリ文字列（`str`）をキーバリューペアのコレクションに変換します。
 
-For example, the query string `'foo=bar&abc=xyz&abc=123'` is parsed into:
+例えば、クエリ文字列`'foo=bar&abc=xyz&abc=123'`は以下のように変換されます：
 
 <!-- eslint-skip -->
 ```js
@@ -91,14 +52,11 @@ For example, the query string `'foo=bar&abc=xyz&abc=123'` is parsed into:
 }
 ```
 
-The object returned by the `querystring.parse()` method _does not_
-prototypically inherit from the JavaScript `Object`. This means that typical
-`Object` methods such as `obj.toString()`, `obj.hasOwnProperty()`, and others
-are not defined and *will not work*.
+`querystring.parse()`によって変換されたオブジェクトは、JavaScript `Object`からプロトタイプ継承を _していません_ 。
+これは、 `obj.toString()`や`obj.hasOwnProperty()`のような一般的な`Object`のメソッドが定義されておらず、**動作しない**ことを意味します。
 
-By default, percent-encoded characters within the query string will be assumed
-to use UTF-8 encoding. If an alternative character encoding is used, then an
-alternative `decodeURIComponent` option will need to be specified:
+デフォルトではクエリ文字列内のパーセントエンコードされた文字はUTF-8エンコードが使われていると想定します。
+他の文字エンコードが利用されている場合、`decodeURIComponent`オプションに代替となる関数を指定する必要があります：
 
 ```js
 // Assuming gbkDecodeURIComponent function already exists...
@@ -108,26 +66,18 @@ querystring.parse('w=%D6%D0%CE%C4&foo=bar', null, null,
 ```
 
 ## `querystring.stringify(obj[, sep[, eq[, options]]])`
-<!-- YAML
-added: v0.1.25
--->
 
-* `obj` {Object} The object to serialize into a URL query string
-* `sep` {string} The substring used to delimit key and value pairs in the
-  query string. **Default:** `'&'`.
-* `eq` {string}. The substring used to delimit keys and values in the
-  query string. **Default:** `'='`.
+* `obj` {Object} URLクエリ文字列にシリアライズされるオブジェクト
+* `sep` {string} クエリ文字列内でキーバリューペアを区切る文字列 **デフォルト:** `'&'`
+* `eq` {string} クエリ文字列内でキーとバリューを区切る文字列 **デフォルト:** `'='`
 * `options`
-  * `encodeURIComponent` {Function} The function to use when converting
-    URL-unsafe characters to percent-encoding in the query string. **Default:**
-    `querystring.escape()`.
+  * `encodeURIComponent` {Function} クエリ文字列内のURLアンセーフ文字をパーセントエンコーディングに変換する際に利用される関数 **デフォルト:** `querystring.escape()`.
 
-The `querystring.stringify()` method produces a URL query string from a
-given `obj` by iterating through the object's "own properties".
+`querystring.stringify()`メソッドは、オブジェクトの「直接のプロパティ（own properties）」をイテレートする方法で、引数の`obj`からURLクエリ文字列を生成します。
 
-It serializes the following types of values passed in `obj`:
-{string|number|boolean|string[]|number[]|boolean[]}
-Any other input values will be coerced to empty strings.
+`obj`に渡された以下の型の値をシリアライズ化します：
+{string|number|boolean|string\[\]|number\[\]|boolean\[\]}  
+他の値は強制的に空文字列に変換します。
 
 ```js
 querystring.stringify({ foo: 'bar', baz: ['qux', 'quux'], corge: '' });
@@ -137,9 +87,8 @@ querystring.stringify({ foo: 'bar', baz: 'qux' }, ';', ':');
 // Returns 'foo:bar;baz:qux'
 ```
 
-By default, characters requiring percent-encoding within the query string will
-be encoded as UTF-8. If an alternative encoding is required, then an alternative
-`encodeURIComponent` option will need to be specified:
+デフォルトでは、クエリ文字列内のパーセントエンコーディングが必要な文字はUTF-8としてエンコードされます。
+他の文字エンコードが利用されている場合、`encodeURIComponent`オプションに代替となる関数を指定する必要があります：
 
 ```js
 // Assuming gbkEncodeURIComponent function already exists,
@@ -149,20 +98,13 @@ querystring.stringify({ w: '中文', foo: 'bar' }, null, null,
 ```
 
 ## `querystring.unescape(str)`
-<!-- YAML
-added: v0.1.25
--->
 
 * `str` {string}
 
-The `querystring.unescape()` method performs decoding of URL percent-encoded
-characters on the given `str`.
+`querystring.unescape()`メソッドは、引数`str`のURLパーセントエンコーディングされた文字をでデコーディングします。
 
-The `querystring.unescape()` method is used by `querystring.parse()` and is
-generally not expected to be used directly. It is exported primarily to allow
-application code to provide a replacement decoding implementation if
-necessary by assigning `querystring.unescape` to an alternative function.
+`querystring.unescape()`メソッドは、`querystring.parse()`から呼び出され、基本的に直接呼び出されることは想定されていません。
+このメソッドがエクスポートされている主な理由は、必要に応じてアプリケーションコードが`querystring.unescape`の代替となる関数を受け渡してデコーディング実装を置換できるようにするためです。
 
-By default, the `querystring.unescape()` method will attempt to use the
-JavaScript built-in `decodeURIComponent()` method to decode. If that fails,
-a safer equivalent that does not throw on malformed URLs will be used.
+デフォルトでは、デコードには`querystring.unescape()`メソッドはJavaScriptビルトインの`decodeURIComponent()`メソッドを利用します。
+失敗した場合、不正な形式のURLをスローしないようにするためのより安全な同等物が利用されます。
